@@ -39,11 +39,21 @@ drop_it_meme <- "drop_it_meme_template.png" %>%
   
   
   # "deep fry" meme by sharpening using convolution
-  image_convolve('DoG:0,0,2', scaling = '100, 20%')
+  image_convolve('DoG:0,0,2', scaling = '100, 20%') 
+
+  #%>%
+  #image_convert(type = "Bilevel")
   
 
-
 drop_it_meme
+
+
+kodak_meme_text <- image_blank(500, 500, "gray") %>%
+                  image_annotate("yur", gravity = "north", 
+                                 weight = 700, size = 40) %>%
+                  image_mosaic("kodak.jpg")
+                  
+kodak_meme_text
 
 # animation
 frames <- c(drop_it_meme)
