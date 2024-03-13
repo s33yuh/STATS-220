@@ -101,6 +101,8 @@ kodak_meme_body <- c(kodak_box, thrown_out_box) %>%
 # combine text box and image box
 kodak_meme <- text_box %>% 
               image_composite(kodak_meme_body, offset = "+5+70") %>%
+              # "deep fry" meme by sharpening using convolution
+              image_convolve('DoG:0,0,2', scaling = '100, 20%') %>%
               # write finished meme to .jpg file
               image_write("my_kodak_meme.jpg")
               
