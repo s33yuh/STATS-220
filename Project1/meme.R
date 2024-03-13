@@ -88,7 +88,7 @@ thrown_out_box <- image_blank(290, 290, "black") %>%
 
 
 # meme text box
-text_box <- image_blank(500, 350, "gray") %>%
+text_box <- image_blank(500, 350, "white") %>%
   image_annotate("\"Can we listen to some J. cole\"", 
                  gravity = "north", location = "+0+15",
                  weight = 500, size = 30, font = "sans")
