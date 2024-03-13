@@ -1,10 +1,7 @@
 library(magick) # load magick library
 # link to meme: https://knowyourmeme.com/memes/in-the-studio-like-drop-it/photos/page/2
 
-jcole_face <- "jcoleface.jpg" %>%
-  image_read() %>%
-  image_crop("300x450+450+10") %>%
-  image_scale("150")
+
 
 # create drop it meme
 drop_it_meme <- "drop_it_meme_template.png" %>%
@@ -102,13 +99,54 @@ kodak_meme_body <- c(kodak_box, thrown_out_box) %>%
 kodak_meme <- text_box %>% 
               image_composite(kodak_meme_body, offset = "+5+70") %>%
               # "deep fry" meme by sharpening using convolution
-              image_convolve('DoG:0,0,2', scaling = '100, 20%') %>%
-              # write finished meme to .jpg file
-              image_write("my_kodak_meme.jpg")
+              image_convolve('DoG:0,0,2', scaling = '100, 20%')
               
-  
+# write finished meme to .jpg file
+#image_write(kodak_meme, "my_kodak_meme.jpg")
 
-kodak_meme
+
+# stare meme
+stare_meme <- "kurt_angle_meme.jpg" %>%
+              image_read() %>%
+              image_scale("500") %>%
+              image_crop("300x400+100") %>%
+              image_scale("500") %>%
+              image_quantize(colorspace = 'gray') %>%
+              image_annotate("When the DJ starts ", gravity = "north",
+                             location = "", color = "white", 
+                             strokecolor = "black", strokewidth = 2,
+                             size = 50, weight = 700, font = "Impact", 
+                             boxcolor = "black") %>%
+              image_annotate("playing J.cole", gravity = "north", 
+                            location = "+0+60",
+                            color = "white", strokecolor = "black", 
+                            strokewidth = 2, size = 50, weight = 700, 
+                            font = "Impact", boxcolor = "black") %>%
+              image_convolve('DoG:0,0,2', scaling = '100, 20%')
+          
+
+
+# hater building meme
+hater_building_meme <- "hater_building.jpg" %>%
+                        image_read() %>%
+                        image_scale("500") %>%
+                        image_crop("500x500") %>%
+                        image_annotate("Clocking into my ", gravity = "north",
+                                       location = "", color = "white", 
+                                       strokecolor = "black", strokewidth = 2,
+                                       size = 50, weight = 700, 
+                                       font = "Impact") %>%
+                        image_annotate("12 hr shift", gravity = "north", 
+                                       location = "+0+60",
+                                       color = "white", strokecolor = "black", 
+                                       strokewidth = 2, size = 50, weight = 700, 
+                                       font = "Impact") %>%
+                        image_convolve('DoG:0,0,2', scaling = '100, 20%')
+
 
 # animation
-frames <- c(drop_it_meme)
+
+frames <- c(hater_building_meme, stare_meme, kodak_meme, drop_it_meme, 
+            hater_building_meme)
+my_gif <- image_animate(image_scale(frames, "500x500"), fps = 0.5, dispose = "previous")
+image_write(my_gif, "my_gif.gif")
