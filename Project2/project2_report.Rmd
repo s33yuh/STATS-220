@@ -1,0 +1,115 @@
+---
+title: "Project 2"
+subtitle: "STATS 220 Semester One 2024"
+author: "Boris Kishi-Rychkov"
+date: "2024-04-01"
+output: 
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE, error=FALSE)
+library(tidyverse)
+```
+
+```{css}
+body {
+    font-size: 12pt;
+    font-family: 'Cascadia Code', sans-serif;
+    background-color: #CCC1B7;
+}
+
+pre {
+
+    background-color: #fff1e5;
+    padding: 5px;
+}
+```
+
+## Introduction
+
+For my project I decided to track the weekly spending of University Students at the University of Auckland, with a particular focus on public transport and groceries. The data was collected using a [Google Form](https://forms.gle/wZ5dLpTGe5yYfM5Z6) which was then linked to a Google Sheet and finally read into R as a CSV file.
+
+One of the requirements of the form was that it included a question that would generate categorical data using multiple choice questions with fixed options. For this I wrote the question "How much were your total expenses this week? (excluding rent)". This question would appear to generate numerical data, however, the question was transformed to create categorical data as numerical ranges were given as options in a multiple choice format.
+
+From the data collected through this form, exact weekly spending on both groceries and transport can be tracked, as well as the general range of total weekly expenditure. This data can then be grouped by whether or not the student utilised public transport during the same week. Also, a checkbox question which tracks various spending categories can provide useful insights on how a student manages and spends their weekly income. These data can then be used to provide insights on weekly student spending habits.
+
+
+
+
+## Analytics
+
+People on my form tend to spend over $100 per week excluding their rent. 
+
+
+```{r}
+# published link 
+published_data_link <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn9mbPcQDLTzHf8J8DtdDz6RxgBMGvTpcYa4rJRYm1UldkV8edd5_rrGEbuBOu9r0Jn68r5pPsTkE4/pub?output=csv"
+
+# read csv file into dataframe
+learning_data <- read_csv(published_data_link)
+
+# drop timestamp data column
+learning_data <- learning_data[-1]
+
+# number of responses
+n_resp <- nrow(learning_data)
+
+
+# rename columns
+learning_data <- learning_data %>% 
+  rename("grocery_spending" = 1) %>% 
+  rename("transport_spending" = 2) %>%
+  rename("total_spending" = 3) %>%
+  rename("live_with_parents" = 4) %>%
+  rename("income_source" = 5) %>%
+  rename("spending_category" = 6) %>%
+  rename("public_transport" = 7)
+
+# summary statistics and bar charts
+
+# proportion of responses who use public transport
+uses_public_transport <- (learning_data$public_transport== "Yes") %>%
+  sum(.) / n_resp
+
+
+uses_public_transport <- paste0(round(uses_public_transport * 100, 1), "%")
+
+# mean weekly transport spending
+paste0(mean(learning_data$transport_spending))
+
+
+# bar plots
+
+
+# group data by whether or not public transport was used
+transport_data <- learning_data %>%
+  group_by(public_transport) %>%
+  summarise(mean = mean(transport_spending))
+
+# plot average transport expense for those who used public transport and those who didn't
+ggplot(transport_data, aes(x = factor(public_transport), y = mean)) + 
+  geom_col(color = "black", fill = "cyan3") + 
+  labs(
+    title = "Average Spending On Transport by Public Tranport Usage",
+    x = "Public Transport Taken or Not",
+    y = "Average Weekly Spending on Transport"
+  )
+
+# group data by total spending
+grocery_data <- learning_data %>%
+  group_by(total_spending) %>%
+  summarise(mean = mean(grocery_spending))
+
+# plot average grocery expense based on weekly spending
+ggplot(grocery_data, aes(x = factor(total_spending), y = mean)) + 
+  geom_col(color = "black", fill = "cyan3") + 
+  labs(
+    title = "Average Spending On Groceries by Total Weekly Spending",
+    x = "Weekly Spending",
+    y = "Average Weekly Spending on Groceries"
+  )
+```
+
+
